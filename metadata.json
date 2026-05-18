@@ -1,0 +1,8 @@
+{
+  "name": "打地鼠大作战",
+  "description": "一个充满乐趣的打地鼠小游戏，包含多种关卡、可爱的地鼠动画和刺激的计时应战模式。适合在移动端和微信小程序环境下体验。",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

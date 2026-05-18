@@ -1,0 +1,43 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidScoreEntry(data) {
+      return data.playerName is string 
+          && data.playerName.size() >= 1 
+          && data.playerName.size() <= 20 
+          && data.score is int 
+          && data.score >= 0
+          && data.createdAt == request.time;
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Leaderboard rules
+    match /leaderboard/{scoreId} {
+      // Users can see the leaderboard
+      // Secure list: users should only be able to see top scores
+      allow list: if true; // Publicly readable leaderboard
+      allow get: if true;
+
+      // Allow creating a new score entry
+      // Note: In this simple game, we don't strictly require authentication to post a score, 
+      // but usually it's better. I'll allow anonymous posting but validate the shape.
+      allow create: if isValidScoreEntry(request.resource.data);
+      
+      // Prevent updates/deletions to maintain leaderboard integrity
+      allow update, delete: if false;
+    }
+  }
+}
